@@ -9,6 +9,10 @@ import androidx.work.WorkManager
 import com.me.bui.workmanager.workers.BlurWorker
 import com.me.bui.workmanager.workers.CleanupWorker
 import com.me.bui.workmanager.workers.SaveImageToFileWorker
+import androidx.work.WorkInfo
+import android.arch.lifecycle.LiveData
+
+
 
 
 class BlurViewModel : ViewModel() {
@@ -16,6 +20,12 @@ class BlurViewModel : ViewModel() {
     internal var imageUri: Uri? = null
     internal var outputUri: Uri? = null
     private val workManager: WorkManager = WorkManager.getInstance()
+    // New instance variable for the WorkInfo
+    internal val savedWorkInfo: LiveData<List<WorkInfo>>
+
+    init {
+        savedWorkInfo = workManager.getWorkInfosByTagLiveData(TAG_OUTPUT)
+    }
 
     private fun uriOrNull(uriString: String?): Uri? {
         return if (!uriString.isNullOrEmpty()) {
@@ -60,6 +70,7 @@ class BlurViewModel : ViewModel() {
 
         // Add WorkRequest to save the image to the filesystem
         val save = OneTimeWorkRequest.Builder(SaveImageToFileWorker::class.java)
+            .addTag(TAG_OUTPUT) // This adds the tag
             .build()
         continuation = continuation.then(save)
 

@@ -1,5 +1,6 @@
 package com.me.bui.workmanager
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -9,6 +10,9 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RadioGroup
 import com.bumptech.glide.Glide
+import androidx.work.WorkInfo
+
+
 
 
 class BlurActivity : AppCompatActivity() {
@@ -38,6 +42,9 @@ class BlurActivity : AppCompatActivity() {
 
         // Setup blur image file button
         setOnClickListeners()
+
+        // Show work status, added in onCreate()
+        viewModel.savedWorkInfo.observe(this, workInfosObserver())
 
     }
 
@@ -81,4 +88,25 @@ class BlurActivity : AppCompatActivity() {
                 R.id.radio_blur_lv_3 -> 3
                 else -> 1
             }
+
+    private fun workInfosObserver() : Observer<List<WorkInfo>> {
+        return Observer { listOfWorkInfos ->
+
+            // If there are no matching work info, do nothing
+            if (listOfWorkInfos == null || listOfWorkInfos!!.isEmpty()) {
+                return@Observer
+            }
+
+            // We only care about the first output status.
+            // Every continuation has only one worker tagged TAG_OUTPUT
+            val workInfo = listOfWorkInfos!!.get(0)
+
+            val finished = workInfo.getState().isFinished()
+            if (!finished) {
+                showWorkInProgress()
+            } else {
+                showWorkFinished()
+            }
+        }
+    }
 }

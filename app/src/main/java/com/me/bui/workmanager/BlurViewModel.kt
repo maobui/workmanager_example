@@ -3,6 +3,7 @@ package com.me.bui.workmanager
 import android.arch.lifecycle.ViewModel
 import android.net.Uri
 import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.me.bui.workmanager.workers.BlurWorker
@@ -37,7 +38,10 @@ class BlurViewModel : ViewModel() {
 
     fun applyBlur(blurLevel: Int) {
         // Add WorkRequest to Cleanup temporary images
-        var continuation = workManager.beginWith(OneTimeWorkRequest.from(CleanupWorker::class.java))
+        var continuation = workManager
+            .beginUniqueWork(IMAGE_MANIPULATION_WORK_NAME,
+                ExistingWorkPolicy.REPLACE,
+                OneTimeWorkRequest.from(CleanupWorker::class.java))
 
         // Add WorkRequests to blur the image the number of times requested
         for (i in 0 until blurLevel) {

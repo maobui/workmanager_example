@@ -2,17 +2,11 @@ package com.me.bui.workmanager
 
 import android.arch.lifecycle.ViewModel
 import android.net.Uri
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
 import com.me.bui.workmanager.workers.BlurWorker
 import com.me.bui.workmanager.workers.CleanupWorker
 import com.me.bui.workmanager.workers.SaveImageToFileWorker
-import androidx.work.WorkInfo
 import android.arch.lifecycle.LiveData
-
-
+import androidx.work.*
 
 
 class BlurViewModel : ViewModel() {
@@ -67,9 +61,14 @@ class BlurViewModel : ViewModel() {
             continuation = continuation.then(blurBuilder.build())
         }
 
+        // Create charging constraint
+        val constraints = Constraints.Builder()
+            .setRequiresCharging(true)
+            .build()
 
         // Add WorkRequest to save the image to the filesystem
         val save = OneTimeWorkRequest.Builder(SaveImageToFileWorker::class.java)
+            .setConstraints(constraints)
             .addTag(TAG_OUTPUT) // This adds the tag
             .build()
         continuation = continuation.then(save)

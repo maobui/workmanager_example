@@ -29,7 +29,7 @@ task clean(type: Delete) {
 
 ext.versions = [:]
 versions.compileSdk = 28
-versions.minSdk = 15
+versions.minSdk = 16
 versions.targetSdk = 28
 versions.support = "28.0.0"
 versions.constraint_layout = "1.1.3"

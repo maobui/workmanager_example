@@ -83,7 +83,6 @@ fun sleep() {
  * @param applicationContext Application context
  * @return Blurred bitmap image
  */
-@RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 @WorkerThread
 fun blurBitmap(bitmap: Bitmap, applicationContext: Context): Bitmap {
     lateinit var rsContext: RenderScript

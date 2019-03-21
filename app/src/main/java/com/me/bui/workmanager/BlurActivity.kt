@@ -11,6 +11,9 @@ import android.widget.ProgressBar
 import android.widget.RadioGroup
 import com.bumptech.glide.Glide
 import androidx.work.WorkInfo
+import android.content.Intent
+
+
 
 
 
@@ -59,6 +62,15 @@ class BlurActivity : AppCompatActivity() {
 
     private fun setOnClickListeners() {
         goButton.setOnClickListener { viewModel.applyBlur(blurLevel) }
+
+        outputButton.setOnClickListener { view ->
+            viewModel.outputUri?.let { currentUri ->
+                val actionView = Intent(Intent.ACTION_VIEW, currentUri)
+                actionView.resolveActivity(packageManager)?.run {
+                    startActivity(actionView)
+                }
+            }
+        }
     }
 
     /**
@@ -93,19 +105,29 @@ class BlurActivity : AppCompatActivity() {
         return Observer { listOfWorkInfos ->
 
             // If there are no matching work info, do nothing
-            if (listOfWorkInfos == null || listOfWorkInfos!!.isEmpty()) {
+            if (listOfWorkInfos.isNullOrEmpty()) {
                 return@Observer
             }
 
             // We only care about the first output status.
             // Every continuation has only one worker tagged TAG_OUTPUT
-            val workInfo = listOfWorkInfos!!.get(0)
+            val workInfo = listOfWorkInfos[0]
 
             val finished = workInfo.getState().isFinished()
             if (!finished) {
                 showWorkInProgress()
             } else {
                 showWorkFinished()
+
+                // Normally this processing, which is not directly related to drawing views on
+                // screen would be in the ViewModel. For simplicity we are keeping it here.
+                val outputImageUri = workInfo.outputData.getString(KEY_IMAGE_URI)
+
+                // If there is an output file show "See File" button
+                if (!outputImageUri.isNullOrEmpty()) {
+                    viewModel.setOutputUri(outputImageUri as String)
+                    outputButton.visibility = View.VISIBLE
+                }
             }
         }
     }

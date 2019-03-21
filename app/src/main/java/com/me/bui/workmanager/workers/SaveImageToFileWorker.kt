@@ -8,6 +8,7 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.me.bui.workmanager.KEY_IMAGE_URI
 import java.text.SimpleDateFormat
 import java.util.*
@@ -33,9 +34,10 @@ class SaveImageToFileWorker(context: Context, workerParameters: WorkerParameters
             if (TextUtils.isEmpty(outputUri)) {
                 Log.e(TAG, "Writing to MediaStore failed");
                 return Result.failure()
+            } else {
+                val output = workDataOf(KEY_IMAGE_URI to outputUri)
+                return Result.success(output)
             }
-            // TODO create and set the output Data object with the imageUri.
-            return Result.success();
         } catch (exception : Exception) {
             Log.e(TAG, "Unable to save image to Gallery", exception)
             return Result.failure();

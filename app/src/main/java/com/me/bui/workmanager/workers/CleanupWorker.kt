@@ -16,6 +16,10 @@ class CleanupWorker(context: Context, workerParameters: WorkerParameters) : Work
     private val TAG = CleanupWorker::class.java.simpleName
     override fun doWork(): Result {
         val applicationContext = applicationContext
+
+        makeStatusNotification("Cleaning up old temporary files", applicationContext)
+        sleep()
+
         try {
             val outputDirectory = File(
                 applicationContext.filesDir, OUTPUT_PATH

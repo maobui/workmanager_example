@@ -89,4 +89,11 @@ class BlurViewModel : ViewModel() {
         }
         return builder.build()
     }
+
+    /**
+     * Cancel work using the work's unique name
+     */
+    fun cancelWork() {
+        workManager.cancelUniqueWork(IMAGE_MANIPULATION_WORK_NAME)
+    }
 }

@@ -21,6 +21,9 @@ class BlurWorker(context: Context, workerParameters: WorkerParameters) : Worker(
         val applicationContext = applicationContext
         val resourceUri = inputData.getString(KEY_IMAGE_URI)
 
+        makeStatusNotification("Blurring image", applicationContext)
+        sleep()
+
         try {
 
             if (TextUtils.isEmpty(resourceUri)) {
@@ -39,8 +42,6 @@ class BlurWorker(context: Context, workerParameters: WorkerParameters) : Worker(
 
             // Write bitmap to a temp file
             val outputUri = writeBitmapToFile(applicationContext, output)
-
-            makeStatusNotification("Output is $outputUri", applicationContext)
 
             val outputData = Data.Builder()
                 .putString(KEY_IMAGE_URI, outputUri.toString())

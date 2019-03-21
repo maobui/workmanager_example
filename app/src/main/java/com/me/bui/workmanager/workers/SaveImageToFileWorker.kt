@@ -23,8 +23,11 @@ class SaveImageToFileWorker(context: Context, workerParameters: WorkerParameters
     private val DATE_FORMATTER = SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z", Locale.getDefault())
     override fun doWork(): Result {
         val applicationContext = applicationContext
-
         val resolver = applicationContext.getContentResolver()
+
+        makeStatusNotification("Saving image", applicationContext)
+        sleep()
+
         try {
             val resourceUri = inputData.getString(KEY_IMAGE_URI)
             val bitmap = BitmapFactory.decodeStream(
